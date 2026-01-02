@@ -19,7 +19,7 @@ $result = mysqli_query($conn, $query);
 $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // Get data from table data_master
-$query = "SELECT * FROM data_master";
+$query = "SELECT * FROM data_master ORDER BY category ASC, description ASC";
 $result = mysqli_query($conn, $query);
 $data_master = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
@@ -39,11 +39,11 @@ if (isset($_POST['btn_add_user'])) {
 }
 
 // Add Data List
-if (isset($_POST['btn_add_defect'])) {
-    $name = $_POST['name'];
+if (isset($_POST['btn_add_master'])) {
+    $description = $_POST['description'];
     $category = $_POST['category'];
 
-    $query = "INSERT INTO problem_list (name, category) VALUES ('$name', '$category')";
+    $query = "INSERT INTO data_master (description, category) VALUES ('$description', '$category')";
     mysqli_query($conn, $query);
     echo "<script>alert('Success');</script>";
     echo "<script>window.location.href = 'index.php';</script>";
@@ -105,15 +105,15 @@ if (isset($_POST['btn_add_defect'])) {
         </div>
         <!-- ROW 2 -->
         <h3>Data Master</h3>
+        <!-- User Management -->
         <div class="row mt-3">
-            <!-- User Management -->
-            <div class="col">
+            <div class="col-lg-8 text-center mx-auto">
                 <div class="card text-center">
                     <div class="card-header">
                         <span class="float-start my-1">User Management</span>
                         <span class="float-end">
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#AddUserModal">
-                                Add User
+                                Add
                             </button>
                             <div class="modal fade" id="AddUserModal" tabindex="-1" aria-labelledby="AddUserModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
@@ -128,7 +128,7 @@ if (isset($_POST['btn_add_defect'])) {
                                                     <input type="text" class="form-control" id="floatingUsername" name="username">
                                                     <label for="floatingUsername">Username</label>
                                                 </div>
-                                                <div class="form-floating">
+                                                <div class="form-floating mb-3">
                                                     <input type="password" class="form-control" id="floatingPassword" name="password">
                                                     <label for="floatingPassword">Password</label>
                                                 </div>
@@ -138,9 +138,9 @@ if (isset($_POST['btn_add_defect'])) {
                                                 </div>
                                                 <div class="form-floating mt-3">
                                                     <select class="form-select" id="floatingSelect" name="role">
-                                                        <option value="Press">Admin</option>
-                                                        <option value="Paint">Repair</option>
-                                                        <option value="Assy">Leader</option>
+                                                        <option value="Admin">Admin</option>
+                                                        <option value="Repair">Repair</option>
+                                                        <option value="Leader">Leader</option>
                                                     </select>
                                                     <label for="floatingSelect">Role</label>
                                                 </div>
@@ -162,6 +162,7 @@ if (isset($_POST['btn_add_defect'])) {
                                 <tr>
                                     <th scope="col">Username</th>
                                     <th scope="col">Password</th>
+                                    <th scope="col">Name</th>
                                     <th scope="col">Role</th>
                                     <th scope="col" style="width: 90px;">Action</th>
                                 </tr>
@@ -172,6 +173,7 @@ if (isset($_POST['btn_add_defect'])) {
                                     <tr>
                                         <td><?php echo htmlspecialchars($user['username']); ?></td>
                                         <td>********</td>
+                                        <td><?php echo htmlspecialchars($user['name']); ?></td>
                                         <td><?php echo htmlspecialchars($user['role']); ?></td>
                                         <td>
                                             <a class="btn btn-sm btn-warning" href="function/user_action.php?username=<?php echo $user['username']; ?>">Manage</a>
@@ -183,14 +185,16 @@ if (isset($_POST['btn_add_defect'])) {
                     </div>
                 </div>
             </div>
-            <!-- Problem  Management -->
-            <div class="col">
+        </div>
+        <!-- Problem  Management -->
+        <div class="row mt-3">
+            <div class="col-lg-8 text-center mx-auto">
                 <div class="card text-center">
                     <div class="card-header">
-                        <span class="float-start my-1">Data Ma</span>
+                        <span class="float-start my-1">Data Master</span>
                         <span class="float-end">
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#AddDefectModal">
-                                Add Defect
+                                Add
                             </button>
                             <div class="modal fade" id="AddDefectModal" tabindex="-1" aria-labelledby="AddDefectModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
@@ -202,17 +206,23 @@ if (isset($_POST['btn_add_defect'])) {
                                             </div>
                                             <div class="modal-body">
                                                 <div class="form-floating mb-3">
-                                                    <input type="text" class="form-control" id="floatingPartCode" name="part_code">
-                                                    <label for="floatingPartCode">Defect</label>
+                                                    <input type="text" class="form-control" id="floatingPartCode" name="description">
+                                                    <label for="floatingPartCode">Description</label>
                                                 </div>
-                                                <div class="form-floating">
-                                                    <input type="text" class="form-control" id="floatingPartName" name="nama_part">
-                                                    <label for="floatingPartName">Category</label>
+                                                <div class="form-floating mt-3">
+                                                    <select class="form-select" id="floatingSelect" name="category">
+                                                        <option value="Defect">Defect</option>
+                                                        <option value="Model">Model</option>
+                                                        <option value="Category">Category</option>
+                                                        <option value="Root_Cause">Root Cause</option>
+                                                        <option value="Action_Production">Action Production</option>
+                                                    </select>
+                                                    <label for="floatingSelect">Category</label>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-primary" name="btn_add_part">Submit</button>
+                                                <button type="submit" class="btn btn-primary" name="btn_add_master">Submit</button>
                                             </div>
                                         </form>
                                     </div>
@@ -221,23 +231,23 @@ if (isset($_POST['btn_add_defect'])) {
                         </span>
                     </div>
                     <div class="card-body">
-                        <!-- List Data Part -->
+                        <!-- List Data Defect -->
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th scope="col">Part Code</th>
-                                    <th scope="col">Nama Part</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Category</th>
                                     <th scope="col" style="width: 90px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- List Data Part -->
-                                <?php foreach ($parts as $part) : ?>
+                                <!-- List Data Defect -->
+                                <?php foreach ($data_master as $dm) : ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($part['part_code']); ?></td>
-                                        <td><?php echo htmlspecialchars($part['part_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($dm['description']); ?></td>
+                                        <td><?php echo htmlspecialchars($dm['category']); ?></td>
                                         <td>
-                                            <a class="btn btn-sm btn-warning" href="function/part_action.php?part_code=<?php echo $part['part_code']; ?>">Manage</a>
+                                            <a class="btn btn-sm btn-warning" href="function/data_master_action.php?id=<?php echo $dm['id']; ?>">Manage</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

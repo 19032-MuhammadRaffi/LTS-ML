@@ -13,20 +13,18 @@ if (isset($_POST['btn_logout'])) {
     exit;
 }
 
-// Get data from table part
-$part_code = isset($_GET['part_code']) ? $_GET['part_code'] : '';
-$query = "SELECT * FROM part WHERE part_code = '$part_code'";
+// Get data from table data_master
+$id = isset($_GET['id']) ? $_GET['id'] : '';
+$query = "SELECT * FROM data_master WHERE id = '$id'";
 $result = mysqli_query($conn, $query);
-$part = mysqli_fetch_assoc($result);
+$data_master = mysqli_fetch_assoc($result);
 
-// Update part
-if (isset($_POST['btn_update_part'])) {
-    $part_code = $_POST['part_code'];
-    $part_name = $_POST['part_name'];
-    $qty_press = $_POST['qty_press'];
-    $qty_paint = $_POST['qty_paint'];
+// Update data_master
+if (isset($_POST['btn_update'])) {
+    $description = $_POST['description'];
+    $category = $_POST['category'];
 
-    $query = "UPDATE part SET part_name = '$part_name', qty_press = '$qty_press', qty_paint = '$qty_paint' WHERE part_code = '$part_code'";
+    $query = "UPDATE data_master SET description = '$description', category = '$category' WHERE id = '$id'";
     mysqli_query($conn, $query);
     // Alert Success
     echo "<script>alert('Success');</script>";
@@ -34,11 +32,9 @@ if (isset($_POST['btn_update_part'])) {
     exit;
 }
 
-// Delete part
-if (isset($_POST['btn_delete_part'])) {
-    $part_code = $_POST['part_code'];
-
-    $query = "DELETE FROM part WHERE part_code = '$part_code'";
+// Delete data_master
+if (isset($_POST['btn_delete'])) {
+    $query = "DELETE FROM data_master WHERE id = '$id'";
     mysqli_query($conn, $query);
     // Alert Success
     echo "<script>alert('Success');</script>";
@@ -101,50 +97,48 @@ if (isset($_POST['btn_delete_part'])) {
         <!-- ROW 2 -->
         <h3>Data Master</h3>
         <div class="row mt-3">
-            <!-- Part Management -->
+            <!-- Data Master Management -->
             <div class="col-4 mx-auto">
                 <div class="card text-center">
                     <div class="card-header">
-                        <div>Part Management</span>
+                        <div>Data Master Management</span>
                         </div>
                         <div class="card-body">
                             <form action="" method="post">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" name="part_code" value="<?php echo htmlspecialchars($part['part_code']); ?>" readonly>
-                                    <label for="floatingInput">Part Code</label>
+                                    <input type="text" class="form-control" id="floatingInput" name="description" value="<?php echo htmlspecialchars($data_master['description']); ?>">
+                                    <label for="floatingInput">Description</label>
                                 </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" name="part_name" value="<?php echo htmlspecialchars($part['part_name']); ?>">
-                                    <label for="floatingInput">Part Name</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" name="qty_press" value="<?php echo htmlspecialchars($part['qty_press']); ?>">
-                                    <label for="floatingInput">Qty Press</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="floatingInput" name="qty_paint" value="<?php echo htmlspecialchars($part['qty_paint']); ?>">
-                                    <label for="floatingInput">Qty Paint</label>
+                                <div class="form-floating mt-3">
+                                    <select class="form-select" id="floatingSelect" name="category">
+                                        <option value="Defect" <?php if ($data_master['category'] == 'Defect') echo 'selected'; ?>>Defect</option>
+                                        <option value="Model" <?php if ($data_master['category'] == 'Model') echo 'selected'; ?>>Model</option>
+                                        <option value="Category" <?php if ($data_master['category'] == 'Category') echo 'selected'; ?>>Category</option>
+                                        <option value="Root_Cause" <?php if ($data_master['category'] == 'Root_Cause') echo 'selected'; ?>>Root Cause</option>
+                                        <option value="Action_Production" <?php if ($data_master['category'] == 'Action_Production') echo 'selected'; ?>>Action Production</option>
+                                    </select>
+                                    <label for="floatingSelect">Category</label>
                                 </div>
                                 <!-- Button Edit -->
-                                <button type="submit" class="btn btn-primary w-100" name="btn_update_part">Update Part</button>
+                                <button type="submit" class="btn btn-primary w-100 mt-3" name="btn_update">Update</button>
                                 <!-- Button Delete -->
-                                <button type="button" class="btn btn-danger w-100 mt-3" data-bs-toggle="modal" data-bs-target="#deletePartModal">
-                                    Delete Part
+                                <button type="button" class="btn btn-danger w-100 mt-3" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    Delete
                                 </button>
                                 <!-- Modal -->
-                                <div class="modal fade" id="deletePartModal" tabindex="-1" aria-labelledby="deletePartModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="deletePartModalLabel">Delete Part</h1>
+                                                <h1 class="modal-title fs-5" id="deleteModalLabel">Delete Data Master</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                Are you sure you want to delete part "<?php echo htmlspecialchars($part['part_code']); ?>"?
+                                                Are you sure you want to delete data "<?php echo htmlspecialchars($data_master['description']); ?>"?
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                                <button type="submit" name="btn_delete_part" class="btn btn-danger">Yes</button>
+                                                <button type="submit" name="btn_delete" class="btn btn-danger">Yes</button>
                                             </div>
                                         </div>
                                     </div>

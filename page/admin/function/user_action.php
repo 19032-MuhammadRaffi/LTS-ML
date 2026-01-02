@@ -23,9 +23,10 @@ $user = mysqli_fetch_assoc($result);
 if (isset($_POST['btn_update_user'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
+    $name = $_POST['name'];
     $role = $_POST['role'];
 
-    $query = "UPDATE user SET password = '$password', role = '$role' WHERE username = '$username'";
+    $query = "UPDATE user SET password = '$password', name = '$name', role = '$role' WHERE username = '$username'";
     mysqli_query($conn, $query);
     echo "<script>alert('Success');</script>";
     echo "<script>window.location.href = '../index.php';</script>";
@@ -115,12 +116,15 @@ if (isset($_POST['btn_delete_user'])) {
                                     <input type="password" class="form-control" id="floatingInput" name="password" value="<?php echo htmlspecialchars($user['password']); ?>">
                                     <label for="floatingInput">Password</label>
                                 </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput" name="name" value="<?php echo htmlspecialchars($user['name']); ?>">
+                                    <label for="floatingInput">Name</label>
+                                </div>
                                 <div class="form-floating mt-3">
                                     <select class="form-select" id="floatingSelect" name="role">
                                         <option value="Admin" <?php if ($user['role'] == 'Admin') echo 'selected'; ?>>Admin</option>
-                                        <option value="Press" <?php if ($user['role'] == 'Press') echo 'selected'; ?>>Press</option>
-                                        <option value="Paint" <?php if ($user['role'] == 'Paint') echo 'selected'; ?>>Paint</option>
-                                        <option value="Assy" <?php if ($user['role'] == 'Assy') echo 'selected'; ?>>Assy</option>
+                                        <option value="Repair" <?php if ($user['role'] == 'Repair') echo 'selected'; ?>>Repair</option>
+                                        <option value="Leader" <?php if ($user['role'] == 'Leader') echo 'selected'; ?>>Leader</option>
                                     </select>
                                     <label for="floatingSelect">Role</label>
                                 </div>

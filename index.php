@@ -13,9 +13,9 @@ if (isset($_GET['uid']) && isset($_GET['pwd'])) {
 if (isset($_SESSION['role'])) {
   if ($_SESSION['role'] == 'Admin') {
     header('Location: page/admin/index.php');
-  } elseif ($_SESSION['role'] == 'Assy') {
-    header('Location: page/assy/index.php');
-  } else {
+  } elseif ($_SESSION['role'] == 'Repair') {
+    header('Location: page/repair/index.php');
+  } elseif ($_SESSION['role'] == 'Leader') {
     header('Location: index.php');
   }
 }
@@ -32,12 +32,12 @@ function loginUser($username, $password, $conn)
     $_SESSION['username'] = $data['username'];
     if ($data['role'] == 'Admin') {
       header('Location: page/admin/index.php');
-    } elseif ($data['role'] == 'Press') {
-      header('Location: page/press/index.php');
+    } elseif ($data['role'] == 'Repair') {
+      header('Location: page/repair/index.php');
     } elseif ($data['role'] == 'Paint') {
       header('Location: page/paint/index.php');
-    } elseif ($data['role'] == 'Assy') {
-      header('Location: page/assy/index.php');
+    } elseif ($data['role'] == 'Leader') {
+      header('Location: index.php');
     } else {
       header('Location: index.php');
     }
