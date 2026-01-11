@@ -23,18 +23,21 @@ if (isset($_SESSION['role'])) {
 // Fungsi login
 function loginUser($username, $password, $conn)
 {
-  $query = "SELECT * FROM user WHERE username = '$username'";
+  $query = "SELECT * FROM user_master WHERE username = '$username'";
   $result = mysqli_query($conn, $query);
   $data = mysqli_fetch_assoc($result);
 
   if ($data && $password == $data['password']) {
-    $_SESSION['role'] = $data['role'];
     $_SESSION['username'] = $data['username'];
+    $_SESSION['name'] = $data['name'];
+    $_SESSION['area'] = $data['area'];
+    $_SESSION['role'] = $data['role'];
+
     if ($data['role'] == 'Admin') {
       header('Location: page/admin/index.php');
-    } elseif ($data['role'] == 'Repair') {
+    } elseif ($data['role'] == 'Operator') {
       header('Location: page/repair/index.php');
-    } elseif ($data['role'] == 'Paint') {
+    } elseif ($data['role'] == 'Repair') {
       header('Location: page/paint/index.php');
     } elseif ($data['role'] == 'Leader') {
       header('Location: index.php');

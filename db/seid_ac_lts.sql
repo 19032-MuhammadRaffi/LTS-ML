@@ -1,169 +1,480 @@
--- ======================================
--- DATABASE
--- ======================================
-CREATE DATABASE IF NOT EXISTS seid_ac_lts;
-USE seid_ac_lts;
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Waktu pembuatan: 11 Jan 2026 pada 06.50
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
--- ======================================
--- USER MASTER
--- ======================================
-CREATE TABLE user_master (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    fullname VARCHAR(50),
-    role ENUM('OPERATOR','LEADER','QC','ADMIN') NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- ======================================
--- MASTER TABLES
--- ======================================
-CREATE TABLE model_master (
-    model_id INT AUTO_INCREMENT PRIMARY KEY,
-    model_code VARCHAR(50) NOT NULL UNIQUE
-);
 
-CREATE TABLE defect_master (
-    defect_id INT AUTO_INCREMENT PRIMARY KEY,
-    defect_name VARCHAR(50) NOT NULL
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-CREATE TABLE category_master (
-    category_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_name VARCHAR(50) NOT NULL
-);
+--
+-- Database: `seid_ac_lts`
+--
 
-CREATE TABLE cause_master (
-    cause_id INT AUTO_INCREMENT PRIMARY KEY,
-    cause_name VARCHAR(50) NOT NULL
-);
+-- --------------------------------------------------------
 
-CREATE TABLE action_master (
-    action_id INT AUTO_INCREMENT PRIMARY KEY,
-    action_name VARCHAR(50) NOT NULL
-);
+--
+-- Struktur dari tabel `action_master`
+--
 
-CREATE TABLE area_master (
-    area_id INT AUTO_INCREMENT PRIMARY KEY,
-    area_name VARCHAR(50) NOT NULL UNIQUE,
-    description VARCHAR(100)
-);
+CREATE TABLE `action_master` (
+  `action_id` int(11) NOT NULL,
+  `action_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ======================================
--- MODEL RELATION (CHECKLIST CONFIG)
--- ======================================
-CREATE TABLE model_defect (
-    model_id INT,
-    defect_id INT,
-    PRIMARY KEY (model_id, defect_id),
-    FOREIGN KEY (model_id) REFERENCES model_master(model_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (defect_id) REFERENCES defect_master(defect_id)
-        ON DELETE CASCADE
-);
+-- --------------------------------------------------------
 
-CREATE TABLE model_category (
-    model_id INT,
-    category_id INT,
-    PRIMARY KEY (model_id, category_id),
-    FOREIGN KEY (model_id) REFERENCES model_master(model_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES category_master(category_id)
-        ON DELETE CASCADE
-);
+--
+-- Struktur dari tabel `area_master`
+--
 
-CREATE TABLE model_cause (
-    model_id INT,
-    cause_id INT,
-    PRIMARY KEY (model_id, cause_id),
-    FOREIGN KEY (model_id) REFERENCES model_master(model_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (cause_id) REFERENCES cause_master(cause_id)
-        ON DELETE CASCADE
-);
+CREATE TABLE `area_master` (
+  `area_id` int(11) NOT NULL,
+  `area_name` varchar(50) NOT NULL,
+  `description` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE model_action (
-    model_id INT,
-    action_id INT,
-    PRIMARY KEY (model_id, action_id),
-    FOREIGN KEY (model_id) REFERENCES model_master(model_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (action_id) REFERENCES action_master(action_id)
-        ON DELETE CASCADE
-);
+-- --------------------------------------------------------
 
--- ======================================
--- PRODUCT / SERIAL
--- ======================================
-CREATE TABLE product_master (
-    product_id VARCHAR(50) PRIMARY KEY,
-    model_id INT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (model_id) REFERENCES model_master(model_id)
-);
+--
+-- Struktur dari tabel `category_master`
+--
 
--- ======================================
--- LINE DROP HEADER (HISTORY)
--- ======================================
-CREATE TABLE line_drop_header (
-    line_drop_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE `category_master` (
+  `category_id` int(11) NOT NULL,
+  `category_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-    product_id VARCHAR(50) NOT NULL,
-    model_id INT NOT NULL,
-    area_id INT NOT NULL,
+-- --------------------------------------------------------
 
-    drop_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    dropped_by INT NOT NULL,
+--
+-- Struktur dari tabel `cause_master`
+--
 
-    repair_datetime DATETIME NULL,
-    repaired_by INT NULL,
+CREATE TABLE `cause_master` (
+  `cause_id` int(11) NOT NULL,
+  `cause_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-    line_name VARCHAR(50),
-    status ENUM('OPEN','CLOSE') DEFAULT 'OPEN',
+-- --------------------------------------------------------
 
-    FOREIGN KEY (product_id) REFERENCES product_master(product_id),
-    FOREIGN KEY (model_id) REFERENCES model_master(model_id),
-    FOREIGN KEY (area_id) REFERENCES area_master(area_id),
-    FOREIGN KEY (dropped_by) REFERENCES user_master(user_id),
-    FOREIGN KEY (repaired_by) REFERENCES user_master(user_id)
-);
+--
+-- Struktur dari tabel `defect_master`
+--
 
--- ======================================
--- LINE DROP DETAIL (CHECKLIST RESULT)
--- ======================================
-CREATE TABLE line_drop_defect (
-    line_drop_id INT,
-    defect_id INT,
-    PRIMARY KEY (line_drop_id, defect_id),
-    FOREIGN KEY (line_drop_id) REFERENCES line_drop_header(line_drop_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (defect_id) REFERENCES defect_master(defect_id)
-);
+CREATE TABLE `defect_master` (
+  `defect_id` int(11) NOT NULL,
+  `defect_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE line_drop_category (
-    line_drop_id INT,
-    category_id INT,
-    PRIMARY KEY (line_drop_id, category_id),
-    FOREIGN KEY (line_drop_id) REFERENCES line_drop_header(line_drop_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES category_master(category_id)
-);
+-- --------------------------------------------------------
 
-CREATE TABLE line_drop_cause (
-    line_drop_id INT,
-    cause_id INT,
-    PRIMARY KEY (line_drop_id, cause_id),
-    FOREIGN KEY (line_drop_id) REFERENCES line_drop_header(line_drop_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (cause_id) REFERENCES cause_master(cause_id)
-);
+--
+-- Struktur dari tabel `line_drop_action`
+--
 
-CREATE TABLE line_drop_action (
-    line_drop_id INT,
-    action_id INT,
-    PRIMARY KEY (line_drop_id, action_id),
-    FOREIGN KEY (line_drop_id) REFERENCES line_drop_header(line_drop_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (action_id) REFERENCES action_master(action_id)
-);
+CREATE TABLE `line_drop_action` (
+  `line_drop_id` int(11) NOT NULL,
+  `action_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `line_drop_category`
+--
+
+CREATE TABLE `line_drop_category` (
+  `line_drop_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `line_drop_cause`
+--
+
+CREATE TABLE `line_drop_cause` (
+  `line_drop_id` int(11) NOT NULL,
+  `cause_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `line_drop_defect`
+--
+
+CREATE TABLE `line_drop_defect` (
+  `line_drop_id` int(11) NOT NULL,
+  `defect_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `line_drop_header`
+--
+
+CREATE TABLE `line_drop_header` (
+  `line_drop_id` int(11) NOT NULL,
+  `product_id` varchar(50) NOT NULL,
+  `model_id` int(11) NOT NULL,
+  `area_id` int(11) NOT NULL,
+  `drop_datetime` datetime DEFAULT current_timestamp(),
+  `dropped_by` int(11) NOT NULL,
+  `repair_datetime` datetime DEFAULT NULL,
+  `repaired_by` int(11) DEFAULT NULL,
+  `line_name` varchar(50) DEFAULT NULL,
+  `status` enum('OPEN','CLOSE') DEFAULT 'OPEN'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `model_action`
+--
+
+CREATE TABLE `model_action` (
+  `model_id` int(11) NOT NULL,
+  `action_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `model_category`
+--
+
+CREATE TABLE `model_category` (
+  `model_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `model_cause`
+--
+
+CREATE TABLE `model_cause` (
+  `model_id` int(11) NOT NULL,
+  `cause_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `model_defect`
+--
+
+CREATE TABLE `model_defect` (
+  `model_id` int(11) NOT NULL,
+  `defect_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `model_master`
+--
+
+CREATE TABLE `model_master` (
+  `model_id` int(11) NOT NULL,
+  `model_code` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `product_master`
+--
+
+CREATE TABLE `product_master` (
+  `product_id` varchar(50) NOT NULL,
+  `model_id` int(11) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `user_master`
+--
+
+CREATE TABLE `user_master` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(30) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `area` varchar(32) NOT NULL,
+  `role` enum('OPERATOR','LEADER','QC','ADMIN') NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indeks untuk tabel `action_master`
+--
+ALTER TABLE `action_master`
+  ADD PRIMARY KEY (`action_id`);
+
+--
+-- Indeks untuk tabel `area_master`
+--
+ALTER TABLE `area_master`
+  ADD PRIMARY KEY (`area_id`),
+  ADD UNIQUE KEY `area_name` (`area_name`);
+
+--
+-- Indeks untuk tabel `category_master`
+--
+ALTER TABLE `category_master`
+  ADD PRIMARY KEY (`category_id`);
+
+--
+-- Indeks untuk tabel `cause_master`
+--
+ALTER TABLE `cause_master`
+  ADD PRIMARY KEY (`cause_id`);
+
+--
+-- Indeks untuk tabel `defect_master`
+--
+ALTER TABLE `defect_master`
+  ADD PRIMARY KEY (`defect_id`);
+
+--
+-- Indeks untuk tabel `line_drop_action`
+--
+ALTER TABLE `line_drop_action`
+  ADD PRIMARY KEY (`line_drop_id`,`action_id`),
+  ADD KEY `action_id` (`action_id`);
+
+--
+-- Indeks untuk tabel `line_drop_category`
+--
+ALTER TABLE `line_drop_category`
+  ADD PRIMARY KEY (`line_drop_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indeks untuk tabel `line_drop_cause`
+--
+ALTER TABLE `line_drop_cause`
+  ADD PRIMARY KEY (`line_drop_id`,`cause_id`),
+  ADD KEY `cause_id` (`cause_id`);
+
+--
+-- Indeks untuk tabel `line_drop_defect`
+--
+ALTER TABLE `line_drop_defect`
+  ADD PRIMARY KEY (`line_drop_id`,`defect_id`),
+  ADD KEY `defect_id` (`defect_id`);
+
+--
+-- Indeks untuk tabel `line_drop_header`
+--
+ALTER TABLE `line_drop_header`
+  ADD PRIMARY KEY (`line_drop_id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `model_id` (`model_id`),
+  ADD KEY `area_id` (`area_id`),
+  ADD KEY `dropped_by` (`dropped_by`),
+  ADD KEY `repaired_by` (`repaired_by`);
+
+--
+-- Indeks untuk tabel `model_action`
+--
+ALTER TABLE `model_action`
+  ADD PRIMARY KEY (`model_id`,`action_id`),
+  ADD KEY `action_id` (`action_id`);
+
+--
+-- Indeks untuk tabel `model_category`
+--
+ALTER TABLE `model_category`
+  ADD PRIMARY KEY (`model_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indeks untuk tabel `model_cause`
+--
+ALTER TABLE `model_cause`
+  ADD PRIMARY KEY (`model_id`,`cause_id`),
+  ADD KEY `cause_id` (`cause_id`);
+
+--
+-- Indeks untuk tabel `model_defect`
+--
+ALTER TABLE `model_defect`
+  ADD PRIMARY KEY (`model_id`,`defect_id`),
+  ADD KEY `defect_id` (`defect_id`);
+
+--
+-- Indeks untuk tabel `model_master`
+--
+ALTER TABLE `model_master`
+  ADD PRIMARY KEY (`model_id`),
+  ADD UNIQUE KEY `model_code` (`model_code`);
+
+--
+-- Indeks untuk tabel `product_master`
+--
+ALTER TABLE `product_master`
+  ADD PRIMARY KEY (`product_id`),
+  ADD KEY `model_id` (`model_id`);
+
+--
+-- Indeks untuk tabel `user_master`
+--
+ALTER TABLE `user_master`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- AUTO_INCREMENT untuk tabel yang dibuang
+--
+
+--
+-- AUTO_INCREMENT untuk tabel `action_master`
+--
+ALTER TABLE `action_master`
+  MODIFY `action_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `area_master`
+--
+ALTER TABLE `area_master`
+  MODIFY `area_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `category_master`
+--
+ALTER TABLE `category_master`
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `cause_master`
+--
+ALTER TABLE `cause_master`
+  MODIFY `cause_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `defect_master`
+--
+ALTER TABLE `defect_master`
+  MODIFY `defect_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `line_drop_header`
+--
+ALTER TABLE `line_drop_header`
+  MODIFY `line_drop_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `model_master`
+--
+ALTER TABLE `model_master`
+  MODIFY `model_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `user_master`
+--
+ALTER TABLE `user_master`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+--
+
+--
+-- Ketidakleluasaan untuk tabel `line_drop_action`
+--
+ALTER TABLE `line_drop_action`
+  ADD CONSTRAINT `line_drop_action_ibfk_1` FOREIGN KEY (`line_drop_id`) REFERENCES `line_drop_header` (`line_drop_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `line_drop_action_ibfk_2` FOREIGN KEY (`action_id`) REFERENCES `action_master` (`action_id`);
+
+--
+-- Ketidakleluasaan untuk tabel `line_drop_category`
+--
+ALTER TABLE `line_drop_category`
+  ADD CONSTRAINT `line_drop_category_ibfk_1` FOREIGN KEY (`line_drop_id`) REFERENCES `line_drop_header` (`line_drop_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `line_drop_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category_master` (`category_id`);
+
+--
+-- Ketidakleluasaan untuk tabel `line_drop_cause`
+--
+ALTER TABLE `line_drop_cause`
+  ADD CONSTRAINT `line_drop_cause_ibfk_1` FOREIGN KEY (`line_drop_id`) REFERENCES `line_drop_header` (`line_drop_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `line_drop_cause_ibfk_2` FOREIGN KEY (`cause_id`) REFERENCES `cause_master` (`cause_id`);
+
+--
+-- Ketidakleluasaan untuk tabel `line_drop_defect`
+--
+ALTER TABLE `line_drop_defect`
+  ADD CONSTRAINT `line_drop_defect_ibfk_1` FOREIGN KEY (`line_drop_id`) REFERENCES `line_drop_header` (`line_drop_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `line_drop_defect_ibfk_2` FOREIGN KEY (`defect_id`) REFERENCES `defect_master` (`defect_id`);
+
+--
+-- Ketidakleluasaan untuk tabel `line_drop_header`
+--
+ALTER TABLE `line_drop_header`
+  ADD CONSTRAINT `line_drop_header_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product_master` (`product_id`),
+  ADD CONSTRAINT `line_drop_header_ibfk_2` FOREIGN KEY (`model_id`) REFERENCES `model_master` (`model_id`),
+  ADD CONSTRAINT `line_drop_header_ibfk_3` FOREIGN KEY (`area_id`) REFERENCES `area_master` (`area_id`),
+  ADD CONSTRAINT `line_drop_header_ibfk_4` FOREIGN KEY (`dropped_by`) REFERENCES `user_master` (`user_id`),
+  ADD CONSTRAINT `line_drop_header_ibfk_5` FOREIGN KEY (`repaired_by`) REFERENCES `user_master` (`user_id`);
+
+--
+-- Ketidakleluasaan untuk tabel `model_action`
+--
+ALTER TABLE `model_action`
+  ADD CONSTRAINT `model_action_ibfk_1` FOREIGN KEY (`model_id`) REFERENCES `model_master` (`model_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `model_action_ibfk_2` FOREIGN KEY (`action_id`) REFERENCES `action_master` (`action_id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `model_category`
+--
+ALTER TABLE `model_category`
+  ADD CONSTRAINT `model_category_ibfk_1` FOREIGN KEY (`model_id`) REFERENCES `model_master` (`model_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `model_category_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category_master` (`category_id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `model_cause`
+--
+ALTER TABLE `model_cause`
+  ADD CONSTRAINT `model_cause_ibfk_1` FOREIGN KEY (`model_id`) REFERENCES `model_master` (`model_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `model_cause_ibfk_2` FOREIGN KEY (`cause_id`) REFERENCES `cause_master` (`cause_id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `model_defect`
+--
+ALTER TABLE `model_defect`
+  ADD CONSTRAINT `model_defect_ibfk_1` FOREIGN KEY (`model_id`) REFERENCES `model_master` (`model_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `model_defect_ibfk_2` FOREIGN KEY (`defect_id`) REFERENCES `defect_master` (`defect_id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `product_master`
+--
+ALTER TABLE `product_master`
+  ADD CONSTRAINT `product_master_ibfk_1` FOREIGN KEY (`model_id`) REFERENCES `model_master` (`model_id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
