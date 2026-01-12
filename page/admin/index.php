@@ -218,7 +218,7 @@ if (isset($_POST['btn_delete_master'])) {
     <link rel="stylesheet" href="../../css/style.css" rel="stylesheet">
     <style>
         .btn-sm {
-            width: 80px;
+            width: 100px;
         }
 
         .master-card {
@@ -237,7 +237,14 @@ if (isset($_POST['btn_delete_master'])) {
     <?php include '../../library/themes.php'; ?>
     <div class="container-fluid text-center">
         <!-- ROW 1 -->
-        <div class="row mt-3">
+        <div class="row my-3">
+            <div class="col text-start">
+                <button class="btn btn-sm btn-outline-success" disabled>Admin</button>
+            </div>
+            <div class="col text-center">
+                <a href="index.php" class="btn btn-sm btn-primary">Dashboard</a>
+                <a href="linking.php" class="btn btn-sm btn-outline-primary">Linking</a>
+            </div>
             <div class="col text-end">
                 <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button>
             </div>
@@ -264,7 +271,7 @@ if (isset($_POST['btn_delete_master'])) {
             </div>
         </div>
         <!-- ROW 2 -->
-        <h3>Data Master</h3>
+        <h3 class="mt-5">Data Master</h3>
         <?php if (isset($_SESSION['alert'])): ?>
             <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
                 <?= $_SESSION['alert']['msg'] ?>
