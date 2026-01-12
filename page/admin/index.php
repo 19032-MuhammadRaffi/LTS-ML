@@ -66,6 +66,7 @@ foreach ($masterMap as $key => $cfg) {
             "INSERT INTO {$cfg['table']} ({$cfg['field']}) VALUES ('$val')"
         )) {
             setAlert('success', ucfirst($key) . ' added successfully');
+            $_SESSION['active_master'] = $key; // <<< INI PENTING
         } else {
             setAlert('danger', mysqli_error($conn));
         }
@@ -305,7 +306,7 @@ if (isset($_POST['btn_delete_master'])) {
                                     <th>Name</th>
                                     <th>Area</th>
                                     <th>Role</th>
-                                    <th>Action</th>
+                                    <th style="width: 100px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -546,15 +547,30 @@ if (isset($_POST['btn_delete_master'])) {
         <script>
             // Tampilkan master sesuai tombol diklik
             function showMaster(btn, type) {
+                // simpan master aktif
+                localStorage.setItem('activeMaster', type);
+
                 document.querySelectorAll('.master-card').forEach(c => c.style.display = 'none');
                 document.querySelectorAll('.btn-master').forEach(b => {
                     b.classList.remove('btn-primary');
                     b.classList.add('btn-outline-primary');
                 });
+
                 btn.classList.remove('btn-outline-primary');
                 btn.classList.add('btn-primary');
+
                 document.getElementById('card-' + type).style.display = 'block';
             }
+            document.addEventListener('DOMContentLoaded', function() {
+                const active = localStorage.getItem('activeMaster');
+
+                if (active) {
+                    const btn = document.querySelector(
+                        `.btn-master[onclick*="'${active}'"]`
+                    );
+                    if (btn) btn.click();
+                }
+            });
             // Cegah submit form saat tekan enter
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
@@ -592,8 +608,19 @@ if (isset($_POST['btn_delete_master'])) {
                 }
             });
         </script>
-
-        </script>
+        <?php if (isset($_SESSION['active_master'])): ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    showMaster(
+                        document.querySelector(
+                            "button[onclick=\"showMaster(this,'<?= $_SESSION['active_master'] ?>')\"]"
+                        ),
+                        "<?= $_SESSION['active_master'] ?>"
+                    );
+                });
+            </script>
+            <?php unset($_SESSION['active_master']); ?>
+        <?php endif; ?>
 </body>
 
 </html>
